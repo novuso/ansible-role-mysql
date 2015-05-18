@@ -12,6 +12,8 @@ easy as installing `python-mysqldb`.
 
 ## Role Variables
 
+Ansible variables are listed here along with their default values:
+
 `mysql_ppa_repo` is a list of Ubuntu PPA repositories that are managed for
 this role. Each entry in the list may designate:
 
