@@ -1,0 +1,11 @@
+---
+- hosts: all
+  vars:
+  - mysql_root_password: "{{ lookup('password', '/tmp/passfile length=15') }}"
+  - mysql_databases:
+    - name: "application"
+  - mysql_users:
+    - name: "application"
+      password: "{{ lookup('password', '/tmp/userpass length=15') }}"
+  roles:
+  - ansible-role-mysql
