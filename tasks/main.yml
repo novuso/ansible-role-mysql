@@ -52,7 +52,7 @@
     owner: "root"
     group: "root"
     mode: "0600"
-  notify: "restart mysql"
+  notify: "mysql restart"
 
 - name: "anonymous user"
   sudo: yes
@@ -60,7 +60,7 @@
     name: ""
     state: absent
   when: mysql_remove_anon_user
-  notify: "restart mysql"
+  notify: "mysql restart"
 
 - name: "test database"
   sudo: yes
@@ -68,7 +68,7 @@
     name: "test"
     state: absent
   when: mysql_remove_test_db
-  notify: "restart mysql"
+  notify: "mysql restart"
 
 - name: "mysql databases"
   sudo: yes
@@ -79,7 +79,7 @@
     collation: "{{ item.collation | default('utf8_general_ci') }}"
     encoding: "{{ item.encoding | default('utf8') }}"
   with_items: mysql_databases
-  notify: "restart mysql"
+  notify: "mysql restart"
 
 - name: "mysql users"
   sudo: yes
@@ -91,4 +91,4 @@
     host: "{{ item.host | default('127.0.0.1') }}"
     priv: "{{ item.priv | default(item.name + '.*:ALL') }}"
   with_items: mysql_users
-  notify: "restart mysql"
+  notify: "mysql restart"
