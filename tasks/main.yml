@@ -1,39 +1,39 @@
 ---
 - name: "mysql repository"
-  sudo: yes
+  become: yes
   apt_repository:
     repo: "ppa:{{ item.repo }}"
     state: "{{ item.state | default('present') }}"
     update_cache: "{{ item.update_cache | default('yes') }}"
     validate_certs: "{{ item.validate_certs | default('yes') }}"
-  with_items: mysql_ppa_repo
+  with_items: "{{ mysql_ppa_repo }}"
   when: item.repo is defined
 
 - name: "mysql installed"
-  sudo: yes
+  become: yes
   apt:
     name: "{{ item.name }}"
     state: "{{ item.state | default('present') }}"
     update_cache: yes
     cache_valid_time: 3600
-  with_items: mysql_packages
+  with_items: "{{ mysql_packages }}"
   when: item.name is defined
 
 - name: "mysql enabled"
-  sudo: yes
+  become: yes
   service:
     name: "mysql"
     state: started
     enabled: yes
 
 - name: "check for .my.cnf"
-  sudo: yes
+  become: yes
   stat:
     path: "~/.my.cnf"
   register: _mycnf_file
 
 - name: "mysql root password"
-  sudo: yes
+  become: yes
   mysql_user:
     name: "root"
     host: "{{ item }}"
@@ -45,7 +45,7 @@
   when: _mycnf_file.stat.exists == false
 
 - name: "root password config"
-  sudo: yes
+  become: yes
   template:
     src: "mycnf.j2"
     dest: "~/.my.cnf"
@@ -55,7 +55,7 @@
   notify: "mysql restart"
 
 - name: "anonymous user"
-  sudo: yes
+  become: yes
   mysql_user:
     name: ""
     state: absent
@@ -63,7 +63,7 @@
   notify: "mysql restart"
 
 - name: "test database"
-  sudo: yes
+  become: yes
   mysql_db:
     name: "test"
     state: absent
@@ -71,18 +71,18 @@
   notify: "mysql restart"
 
 - name: "mysql databases"
-  sudo: yes
+  become: yes
   no_log: True
   mysql_db:
     name: "{{ item.name }}"
     state: "{{ item.state | default('present') }}"
     collation: "{{ item.collation | default('utf8_general_ci') }}"
     encoding: "{{ item.encoding | default('utf8') }}"
-  with_items: mysql_databases
+  with_items: "{{ mysql_databases }}"
   notify: "mysql restart"
 
 - name: "mysql users"
-  sudo: yes
+  become: yes
   no_log: True
   mysql_user:
     name: "{{ item.name }}"
@@ -90,5 +90,5 @@
     state: "{{ item.state | default('present') }}"
     host: "{{ item.host | default('127.0.0.1') }}"
     priv: "{{ item.priv | default(item.name + '.*:ALL') }}"
-  with_items: mysql_users
+  with_items: "{{ mysql_users }}"
   notify: "mysql restart"
