@@ -1,6 +1,6 @@
 ---
 - name: "mysql restart"
-  sudo: yes
+  become: yes
   service:
     name: "mysql"
     state: restarted
